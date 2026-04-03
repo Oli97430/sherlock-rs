@@ -4,47 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sherlock-RS</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300d4ff'/%3E%3Cstop offset='100%25' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='26' cy='26' r='16' fill='none' stroke='url(%23g)' stroke-width='4'/%3E%3Cline x1='38' y1='38' x2='54' y2='54' stroke='url(%23g)' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='26' cy='26' r='8' fill='none' stroke='%2300d4ff' stroke-width='1.5' opacity='0.4'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300d4ff'/%3E%3Cstop offset='100%25' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='26' cy='26' r='16' fill='none' stroke='url(%23g)' stroke-width='4'/%3E%3Cline x1='38' y1='38' x2='54' y2='54' stroke='url(%23g)' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg-deep: #06060f;
-  --bg-base: #0c0c1d;
+  --bg-deep:    #06060f;
   --bg-surface: #13132b;
-  --bg-card: #1a1a3e;
-  --bg-hover: #222255;
-  --accent: #00d4ff;
+  --bg-card:    #1a1a3e;
+  --bg-hover:   #222255;
+  --accent:     #00d4ff;
   --accent-dim: #0099bb;
-  --purple: #7c3aed;
-  --green: #10b981;
-  --red: #ef4444;
-  --amber: #f59e0b;
-  --gray: #64748b;
-  --text: #e2e8f0;
-  --text-dim: #94a3b8;
+  --purple:     #7c3aed;
+  --green:      #10b981;
+  --red:        #ef4444;
+  --amber:      #f59e0b;
+  --gray:       #64748b;
+  --text:       #e2e8f0;
+  --text-dim:   #94a3b8;
   --text-muted: #475569;
-  --radius: 12px;
-  --glow: 0 0 20px rgba(0, 212, 255, 0.15);
+  --radius:     12px;
+  --glow:       0 0 20px rgba(0,212,255,0.15);
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
   background: var(--bg-deep);
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* Background effect */
 body::before {
   content: '';
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(124,58,237,.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0,212,255,.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(16,185,129,.04) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -57,571 +55,336 @@ body::before {
   z-index: 1;
 }
 
-/* Logo */
-.logo-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
-}
+/* ── Header ─────────────────────────────────────────────────── */
+.header { text-align: center; padding: 40px 0 28px; }
+
+.logo-wrap { display: flex; justify-content: center; margin-bottom: 12px; }
 
 .logo-svg {
-  width: 90px;
-  height: 90px;
-  filter: drop-shadow(0 0 18px rgba(0, 212, 255, 0.2));
+  width: 88px; height: 88px;
+  filter: drop-shadow(0 0 18px rgba(0,212,255,.2));
   animation: logoFloat 6s ease-in-out infinite;
 }
 
 @keyframes logoFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-/* Footer */
-.footer {
-  text-align: center;
-  padding: 30px 0 10px;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-  border-top: 1px solid rgba(255,255,255,0.04);
-  margin-top: 30px;
-}
-
-.footer a {
-  color: var(--accent-dim);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.footer a:hover { color: var(--accent); }
-
-.footer .author-line {
-  margin-bottom: 4px;
-  color: var(--text-dim);
-}
-
-/* Header */
-.header {
-  text-align: center;
-  padding: 40px 0 30px;
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
 }
 
 .header h1 {
-  font-size: 2.8rem;
-  font-weight: 800;
-  letter-spacing: 4px;
+  font-size: 2.8rem; font-weight: 800; letter-spacing: 4px;
   background: linear-gradient(135deg, var(--accent), var(--purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  margin-bottom: 8px;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 8px;
 }
 
-.header p {
-  color: var(--text-dim);
-  font-size: 1rem;
-  letter-spacing: 1px;
-}
+.header p { color: var(--text-dim); font-size: 1rem; letter-spacing: 1px; }
 
 .header .version {
-  display: inline-block;
-  margin-top: 10px;
+  display: inline-block; margin-top: 10px;
   padding: 3px 12px;
   background: var(--bg-surface);
   border: 1px solid var(--bg-card);
-  border-radius: 20px;
-  font-size: 0.75rem;
-  color: var(--accent);
-  letter-spacing: 1px;
+  border-radius: 20px; font-size: .75rem; color: var(--accent); letter-spacing: 1px;
 }
 
-/* Cards */
+/* ── Cards ──────────────────────────────────────────────────── */
 .card {
-  background: rgba(19, 19, 43, 0.7);
+  background: rgba(19,19,43,.7);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,.06);
   border-radius: var(--radius);
   padding: 24px;
-  margin-bottom: 20px;
-  transition: border-color 0.3s;
-}
-
-.card:hover { border-color: rgba(255,255,255,0.1); }
-
-.card-title {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--text-muted);
   margin-bottom: 16px;
+  transition: border-color .3s;
 }
+.card:hover { border-color: rgba(255,255,255,.1); }
+.card-title { font-size: .75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 16px; }
 
-/* Search */
-.search-row {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
+/* ── Search ─────────────────────────────────────────────────── */
+.search-row { display: flex; gap: 12px; margin-bottom: 16px; }
 
-.search-input {
+.username-textarea {
   flex: 1;
   background: var(--bg-deep);
   border: 1px solid var(--bg-card);
   border-radius: 8px;
-  padding: 14px 18px;
+  padding: 13px 18px;
   color: var(--text);
   font-size: 1rem;
   font-family: 'Cascadia Code', 'Consolas', monospace;
   outline: none;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: none;
+  min-height: 54px;
+  max-height: 130px;
+  line-height: 1.55;
+  overflow-y: auto;
+  transition: border-color .3s, box-shadow .3s;
 }
-
-.search-input:focus {
+.username-textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1), var(--glow);
+  box-shadow: 0 0 0 3px rgba(0,212,255,.1), var(--glow);
 }
+.username-textarea::placeholder { color: var(--text-muted); }
 
-.search-input::placeholder { color: var(--text-muted); }
+.btn-col { display: flex; flex-direction: column; gap: 8px; }
 
 .btn {
-  padding: 14px 28px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.5px;
+  padding: 14px 28px; border: none; border-radius: 8px;
+  font-size: .95rem; font-weight: 600; cursor: pointer;
+  transition: all .2s; letter-spacing: .5px; white-space: nowrap;
 }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--purple));
-  color: #fff;
-  min-width: 140px;
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
-}
-
+.btn-primary { background: linear-gradient(135deg, var(--accent), var(--purple)); color: #fff; min-width: 130px; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,212,255,.3); }
 .btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-stop { background: linear-gradient(135deg,var(--red),#dc2626); color: #fff; min-width: 130px; }
+.btn-stop:hover { box-shadow: 0 4px 20px rgba(239,68,68,.3); }
 
-.btn-primary:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.btn-stop {
-  background: linear-gradient(135deg, var(--red), #dc2626);
-  color: #fff;
-  min-width: 140px;
-}
-
-.btn-stop:hover { box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3); }
-
-.options-row {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.option-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--text-dim);
-}
-
-.option-group input[type="number"] {
-  width: 70px;
-  background: var(--bg-deep);
-  border: 1px solid var(--bg-card);
-  border-radius: 6px;
-  padding: 6px 10px;
-  color: var(--text);
-  font-size: 0.85rem;
-  outline: none;
-}
-
+.options-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.option-group { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--text-dim); }
+.option-group input[type="number"],
 .option-group input[type="text"] {
-  width: 200px;
-  background: var(--bg-deep);
-  border: 1px solid var(--bg-card);
-  border-radius: 6px;
-  padding: 6px 10px;
-  color: var(--text);
-  font-size: 0.85rem;
-  font-family: 'Cascadia Code', 'Consolas', monospace;
-  outline: none;
+  background: var(--bg-deep); border: 1px solid var(--bg-card);
+  border-radius: 6px; padding: 6px 10px; color: var(--text); font-size: .85rem; outline: none;
 }
+.option-group input[type="number"] { width: 70px; }
+.option-group input[type="text"]   { width: 190px; font-family: 'Cascadia Code','Consolas',monospace; }
 
-.toggle {
-  position: relative;
-  width: 40px;
-  height: 22px;
-  display: inline-block;
-}
-
+.toggle { position: relative; width: 40px; height: 22px; display: inline-block; }
 .toggle input { opacity: 0; width: 0; height: 0; }
-
 .toggle .slider {
-  position: absolute;
-  inset: 0;
-  background: var(--bg-deep);
-  border: 1px solid var(--bg-card);
-  border-radius: 22px;
-  cursor: pointer;
-  transition: 0.3s;
+  position: absolute; inset: 0;
+  background: var(--bg-deep); border: 1px solid var(--bg-card);
+  border-radius: 22px; cursor: pointer; transition: .3s;
 }
-
 .toggle .slider::before {
-  content: '';
-  position: absolute;
-  width: 16px; height: 16px;
-  left: 2px; bottom: 2px;
-  background: var(--text-muted);
-  border-radius: 50%;
-  transition: 0.3s;
+  content: ''; position: absolute;
+  width: 16px; height: 16px; left: 2px; bottom: 2px;
+  background: var(--text-muted); border-radius: 50%; transition: .3s;
 }
-
 .toggle input:checked + .slider { background: var(--accent-dim); border-color: var(--accent); }
 .toggle input:checked + .slider::before { transform: translateX(18px); background: #fff; }
 
-/* Progress */
+/* ── Tabs ───────────────────────────────────────────────────── */
+.tabs-bar {
+  display: none;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.tab-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-card);
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-size: .85rem; font-weight: 500;
+  cursor: pointer; transition: all .2s;
+}
+.tab-btn:hover { background: var(--bg-hover); color: var(--text); }
+.tab-active { background: var(--bg-card) !important; border-color: var(--accent) !important; color: var(--text) !important; }
+
+@keyframes tabPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,212,255,0); }
+  50%      { box-shadow: 0 0 0 5px rgba(0,212,255,.18); }
+}
+.tab-searching { animation: tabPulse 1.5s ease-in-out infinite; border-color: var(--accent) !important; }
+
+.tab-badge {
+  background: rgba(16,185,129,.15); color: var(--green);
+  padding: 2px 8px; border-radius: 12px;
+  font-size: .7rem; font-weight: 700; min-width: 22px; text-align: center;
+}
+.tab-active .tab-badge { background: rgba(16,185,129,.25); }
+
+/* ── Progress ───────────────────────────────────────────────── */
 .progress-section { display: none; }
 .progress-section.active { display: block; }
 
 .progress-bar-wrap {
-  width: 100%;
-  height: 8px;
-  background: var(--bg-deep);
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 14px;
+  width: 100%; height: 8px;
+  background: var(--bg-deep); border-radius: 8px; overflow: hidden; margin-bottom: 14px;
 }
-
 .progress-bar {
-  height: 100%;
-  width: 0%;
+  height: 100%; width: 0%;
   background: linear-gradient(90deg, var(--accent), var(--green));
-  border-radius: 8px;
-  transition: width 0.15s ease-out;
+  border-radius: 8px; transition: width .15s ease-out;
 }
 
-.stats-row {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.stat {
-  font-size: 0.85rem;
-  color: var(--text-dim);
-}
-
-.stat strong {
-  font-size: 1.2rem;
-  margin-right: 4px;
-}
-
-.stat.found strong { color: var(--green); }
+.stats-row { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+.stat { font-size: .85rem; color: var(--text-dim); }
+.stat strong { font-size: 1.2rem; margin-right: 4px; }
+.stat.found  strong { color: var(--green); }
 .stat.errors strong { color: var(--red); }
-.stat.waf strong { color: var(--amber); }
+.stat.waf    strong { color: var(--amber); }
 .stat.progress strong { color: var(--accent); }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 .searching-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--accent);
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .85rem; color: var(--accent);
   animation: pulse 1.5s infinite;
 }
-
 .searching-indicator .dot {
-  width: 8px; height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--accent);
+  width: 8px; height: 8px; background: var(--accent);
+  border-radius: 50%; box-shadow: 0 0 8px var(--accent);
 }
 
-/* Results header */
+/* ── Results header ─────────────────────────────────────────── */
 .results-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
 }
-
-.results-header .left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.results-header .left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
 .filter-input {
-  background: var(--bg-deep);
-  border: 1px solid var(--bg-card);
-  border-radius: 6px;
-  padding: 8px 12px;
-  color: var(--text);
-  font-size: 0.85rem;
-  outline: none;
-  width: 200px;
+  background: var(--bg-deep); border: 1px solid var(--bg-card);
+  border-radius: 6px; padding: 8px 12px; color: var(--text);
+  font-size: .85rem; outline: none; width: 180px;
 }
-
 .filter-input:focus { border-color: var(--accent); }
 
 .sort-select {
-  background: var(--bg-deep);
-  border: 1px solid var(--bg-card);
-  border-radius: 6px;
-  padding: 8px 12px;
-  color: var(--text);
-  font-size: 0.85rem;
-  outline: none;
-  cursor: pointer;
+  background: var(--bg-deep); border: 1px solid var(--bg-card);
+  border-radius: 6px; padding: 8px 10px; color: var(--text);
+  font-size: .85rem; outline: none; cursor: pointer;
 }
 
 .btn-group { display: flex; gap: 8px; }
-
 .btn-sm {
-  padding: 8px 16px;
-  border: 1px solid var(--bg-card);
-  background: var(--bg-surface);
-  color: var(--text-dim);
-  border-radius: 6px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s;
+  padding: 8px 14px; border: 1px solid var(--bg-card);
+  background: var(--bg-surface); color: var(--text-dim);
+  border-radius: 6px; font-size: .8rem; cursor: pointer; transition: all .2s;
 }
+.btn-sm:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,.05); }
 
-.btn-sm:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: rgba(0, 212, 255, 0.05);
-}
-
-.show-found-only {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  cursor: pointer;
-}
-
+.show-found-only { display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--text-dim); cursor: pointer; }
 .show-found-only input { accent-color: var(--accent); }
 
-/* Results grid */
-.results-grid {
-  display: grid;
-  gap: 6px;
-}
+/* ── Result rows ────────────────────────────────────────────── */
+.results-grid { display: grid; gap: 5px; }
 
 .result-row {
   display: grid;
-  grid-template-columns: 200px 1fr 100px 80px 36px;
-  align-items: center;
-  gap: 12px;
+  grid-template-columns: 190px 1fr 110px 80px 36px;
+  align-items: center; gap: 12px;
   padding: 10px 16px;
   background: var(--bg-surface);
-  border-radius: 8px;
-  border: 1px solid transparent;
-  transition: all 0.2s;
-  animation: fadeSlide 0.25s ease-out;
+  border-radius: 8px; border: 1px solid transparent;
+  transition: all .18s;
+  animation: fadeSlide .22s ease-out;
 }
-
-.result-row:hover {
-  background: var(--bg-hover);
-  border-color: rgba(255,255,255,0.06);
-}
+.result-row:hover { background: var(--bg-hover); border-color: rgba(255,255,255,.06); }
 
 @keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity:0; transform: translateY(8px); }
+  to   { opacity:1; transform: translateY(0); }
 }
 
-.result-site {
-  font-weight: 600;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.result-url {
-  font-family: 'Cascadia Code', 'Consolas', monospace;
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.result-url a {
-  color: var(--text-dim);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
+.result-site { font-weight: 600; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.result-url  { font-family: 'Cascadia Code','Consolas',monospace; font-size: .78rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.result-url a { color: var(--text-dim); text-decoration: none; transition: color .2s; }
 .result-url a:hover { color: var(--accent); }
+.result-time { font-size: .75rem; color: var(--text-muted); text-align: right; font-family: 'Cascadia Code','Consolas',monospace; }
 
-.badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.badge-claimed { background: rgba(16, 185, 129, 0.15); color: var(--green); }
-.badge-available { background: rgba(100, 116, 139, 0.15); color: var(--gray); }
-.badge-unknown { background: rgba(239, 68, 68, 0.15); color: var(--red); }
-.badge-illegal { background: rgba(245, 158, 11, 0.1); color: var(--text-muted); }
-.badge-waf { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
-
-.result-time {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  text-align: right;
-  font-family: 'Cascadia Code', 'Consolas', monospace;
-}
+.badge { padding: 4px 10px; border-radius: 20px; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; text-align: center; white-space: nowrap; }
+.badge-claimed   { background: rgba(16,185,129,.15); color: var(--green); }
+.badge-available { background: rgba(100,116,139,.12); color: var(--gray); }
+.badge-unknown   { background: rgba(239,68,68,.12);   color: var(--red); }
+.badge-illegal   { background: rgba(100,116,139,.08); color: var(--text-muted); }
+.badge-waf       { background: rgba(245,158,11,.15);  color: var(--amber); }
 
 .copy-btn {
-  width: 28px; height: 28px;
-  background: none;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  transition: all 0.2s;
-  opacity: 0;
+  width: 28px; height: 28px; background: none;
+  border: 1px solid transparent; border-radius: 6px;
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; transition: all .2s; opacity: 0;
 }
-
 .result-row:hover .copy-btn { opacity: 1; }
 .copy-btn:hover { background: var(--bg-card); color: var(--accent); border-color: var(--accent); }
 
-/* Empty / loading states */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-muted);
-}
+/* ── Empty / loading states ─────────────────────────────────── */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty-state .icon { font-size: 3rem; margin-bottom: 16px; opacity: .3; }
 
-.empty-state .icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.3; }
-.empty-state p { font-size: 0.95rem; }
-
-.loading-state {
-  text-align: center;
-  padding: 40px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
+.loading-state { text-align: center; padding: 40px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
-  width: 36px; height: 36px;
-  border: 3px solid var(--bg-card);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
+  width: 36px; height: 36px; border: 3px solid var(--bg-card);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin .8s linear infinite; margin: 0 auto 16px;
 }
+.loading-state p { color: var(--text-dim); font-size: .9rem; }
 
-.loading-state p { color: var(--text-dim); font-size: 0.9rem; }
-
-/* Toast */
+/* ── Toast ──────────────────────────────────────────────────── */
 .toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  z-index: 9999;
-  animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 1.7s forwards;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--bg-card); border: 1px solid var(--accent); color: var(--accent);
+  padding: 12px 20px; border-radius: 8px; font-size: .85rem; z-index: 9999;
+  animation: toastIn .3s ease-out, toastOut .3s ease-in 1.7s forwards;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
 }
+@keyframes toastIn  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+@keyframes toastOut { from{opacity:1} to{opacity:0} }
 
-@keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
-
-/* Update DB button */
+/* ── Top-right update button ────────────────────────────────── */
 .update-btn {
-  position: fixed;
-  top: 16px;
-  right: 20px;
+  position: fixed; top: 16px; right: 20px;
   padding: 8px 16px;
-  background: var(--bg-surface);
-  border: 1px solid var(--bg-card);
-  color: var(--text-dim);
-  border-radius: 8px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  z-index: 100;
+  background: var(--bg-surface); border: 1px solid var(--bg-card);
+  color: var(--text-dim); border-radius: 8px; font-size: .8rem;
+  cursor: pointer; transition: all .2s; z-index: 100;
 }
-
 .update-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Scrollbar */
+/* ── Footer ─────────────────────────────────────────────────── */
+.footer {
+  text-align: center; padding: 30px 0 10px;
+  color: var(--text-muted); font-size: .75rem; letter-spacing: .5px;
+  border-top: 1px solid rgba(255,255,255,.04); margin-top: 24px;
+}
+.footer a { color: var(--accent-dim); text-decoration: none; transition: color .2s; }
+.footer a:hover { color: var(--accent); }
+.footer .author-line { margin-bottom: 4px; color: var(--text-dim); }
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
 ::-webkit-scrollbar-thumb { background: var(--bg-card); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--bg-hover); }
 
-/* Responsive */
+/* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .header h1 { font-size: 1.8rem; }
   .search-row { flex-direction: column; }
+  .btn-col { flex-direction: row; }
   .result-row { grid-template-columns: 1fr 100px; }
   .result-url, .result-time, .copy-btn { display: none; }
-  .results-header { flex-direction: column; align-items: stretch; }
-  .filter-input { width: 100%; }
 }
 </style>
 </head>
 <body>
 
-<button class="update-btn" onclick="updateDb()" id="updateBtn" title="Update sites database from GitHub">&#x21bb; Update DB</button>
+<button class="update-btn" id="updateBtn" onclick="updateDb()">&#x21bb; Update DB</button>
 
 <div class="container">
+
+  <!-- Header -->
   <div class="header">
     <div class="logo-wrap">
       <svg class="logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#00d4ff"/>
-            <stop offset="50%" stop-color="#7c3aed"/>
+            <stop offset="0%"   stop-color="#00d4ff"/>
+            <stop offset="50%"  stop-color="#7c3aed"/>
             <stop offset="100%" stop-color="#10b981"/>
           </linearGradient>
           <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#00d4ff"/>
+            <stop offset="0%"   stop-color="#00d4ff"/>
             <stop offset="100%" stop-color="#7c3aed"/>
           </linearGradient>
           <filter id="glow">
@@ -629,28 +392,18 @@ body::before {
             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <!-- Outer ring -->
-        <circle cx="46" cy="46" r="30" fill="none" stroke="url(#grad1)" stroke-width="3.5" opacity="0.25" filter="url(#glow)"/>
-        <!-- Main magnifying lens -->
+        <circle cx="46" cy="46" r="30" fill="none" stroke="url(#grad1)" stroke-width="3" opacity=".2" filter="url(#glow)"/>
         <circle cx="46" cy="46" r="22" fill="none" stroke="url(#grad2)" stroke-width="4" filter="url(#glow)"/>
-        <!-- Inner lens reflection -->
-        <circle cx="46" cy="46" r="13" fill="none" stroke="#00d4ff" stroke-width="1.2" opacity="0.3"/>
-        <path d="M36 38 Q42 30 54 36" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity="0.35" stroke-linecap="round"/>
-        <!-- Lens center eye/dot -->
-        <circle cx="46" cy="46" r="4" fill="url(#grad2)" opacity="0.5"/>
-        <!-- Handle -->
+        <circle cx="46" cy="46" r="13" fill="none" stroke="#00d4ff" stroke-width="1.2" opacity=".28"/>
+        <path d="M36 38 Q42 30 54 36" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity=".3" stroke-linecap="round"/>
+        <circle cx="46" cy="46" r="4" fill="url(#grad2)" opacity=".45"/>
         <line x1="63" y1="63" x2="95" y2="95" stroke="url(#grad2)" stroke-width="7" stroke-linecap="round" filter="url(#glow)"/>
-        <!-- Handle accent line -->
-        <line x1="65" y1="65" x2="90" y2="90" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
-        <!-- Scanning lines -->
-        <line x1="30" y1="42" x2="62" y2="42" stroke="#00d4ff" stroke-width="0.8" opacity="0.2"/>
-        <line x1="32" y1="48" x2="60" y2="48" stroke="#7c3aed" stroke-width="0.8" opacity="0.2"/>
-        <line x1="34" y1="54" x2="58" y2="54" stroke="#10b981" stroke-width="0.8" opacity="0.15"/>
-        <!-- Data nodes -->
-        <circle cx="16" cy="28" r="2.5" fill="#00d4ff" opacity="0.4"><animate attributeName="opacity" values="0.2;0.6;0.2" dur="3s" repeatCount="indefinite"/></circle>
-        <circle cx="22" cy="14" r="2" fill="#7c3aed" opacity="0.35"><animate attributeName="opacity" values="0.15;0.5;0.15" dur="2.5s" repeatCount="indefinite"/></circle>
-        <circle cx="70" cy="20" r="2" fill="#10b981" opacity="0.3"><animate attributeName="opacity" values="0.1;0.45;0.1" dur="4s" repeatCount="indefinite"/></circle>
-        <circle cx="10" cy="52" r="1.8" fill="#00d4ff" opacity="0.25"><animate attributeName="opacity" values="0.1;0.4;0.1" dur="3.5s" repeatCount="indefinite"/></circle>
+        <line x1="65" y1="65" x2="90" y2="90" stroke="#00d4ff" stroke-width="1.8" stroke-linecap="round" opacity=".25"/>
+        <line x1="30" y1="42" x2="62" y2="42" stroke="#00d4ff" stroke-width=".8" opacity=".18"/>
+        <line x1="32" y1="48" x2="60" y2="48" stroke="#7c3aed" stroke-width=".8" opacity=".18"/>
+        <circle cx="16" cy="28" r="2.5" fill="#00d4ff" opacity=".35"><animate attributeName="opacity" values=".15;.55;.15" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="22" cy="14" r="2"   fill="#7c3aed"  opacity=".3"><animate attributeName="opacity" values=".1;.45;.1"  dur="2.5s" repeatCount="indefinite"/></circle>
+        <circle cx="70" cy="20" r="2"   fill="#10b981"  opacity=".25"><animate attributeName="opacity" values=".1;.4;.1"  dur="4s" repeatCount="indefinite"/></circle>
       </svg>
     </div>
     <h1>SHERLOCK-RS</h1>
@@ -658,7 +411,7 @@ body::before {
     <span class="version">RUST EDITION v1.0.0</span>
   </div>
 
-  <!-- Loading state -->
+  <!-- Loading -->
   <div class="card" id="loadingCard">
     <div class="loading-state">
       <div class="spinner"></div>
@@ -666,23 +419,26 @@ body::before {
     </div>
   </div>
 
-  <!-- Error state -->
-  <div class="card" id="errorCard" style="display:none; border-color: var(--red);">
+  <!-- Error -->
+  <div class="card" id="errorCard" style="display:none; border-color:var(--red);">
     <div class="empty-state">
       <div class="icon">&#x26a0;</div>
-      <p id="errorMsg" style="color: var(--red);"></p>
+      <p id="errorMsg" style="color:var(--red);"></p>
       <br>
       <button class="btn btn-primary" onclick="updateDb()">Retry Download</button>
     </div>
   </div>
 
-  <!-- Search card -->
+  <!-- Search -->
   <div class="card" id="searchCard" style="display:none;">
     <div class="card-title">&#x1f50e; Search</div>
     <div class="search-row">
-      <input type="text" class="search-input" id="username" placeholder="Enter username to investigate..." autocomplete="off" autofocus>
-      <button class="btn btn-primary" id="huntBtn" onclick="startSearch()">&#x1f50d; Hunt</button>
-      <button class="btn btn-stop" id="stopBtn" onclick="stopSearch()" style="display:none;">&#x25a0; Stop</button>
+      <textarea id="usernames" class="username-textarea" rows="2"
+        placeholder="Enter one or more usernames — one per line or comma-separated&#10;johndoe&#10;janedoe, alice"></textarea>
+      <div class="btn-col">
+        <button class="btn btn-primary" id="huntBtn" onclick="startSearch()">&#x1f50d; Hunt</button>
+        <button class="btn btn-stop"    id="stopBtn" onclick="stopSearch()" style="display:none;">&#x25a0; Stop</button>
+      </div>
     </div>
     <div class="options-row">
       <label class="option-group">
@@ -692,26 +448,24 @@ body::before {
       </label>
       <label class="option-group">
         <span>NSFW</span>
-        <label class="toggle">
-          <input type="checkbox" id="nsfw">
-          <span class="slider"></span>
-        </label>
+        <label class="toggle"><input type="checkbox" id="nsfw"><span class="slider"></span></label>
       </label>
       <label class="option-group">
         <span>Proxy</span>
         <input type="text" id="proxy" placeholder="socks5://127.0.0.1:9050">
       </label>
-      <span class="option-group" id="sitesCount" style="margin-left: auto; color: var(--accent);"></span>
+      <span class="option-group" id="sitesCount" style="margin-left:auto; color:var(--accent);"></span>
     </div>
   </div>
 
+  <!-- Tabs (multi-username) -->
+  <div class="tabs-bar" id="tabsBar"></div>
+
   <!-- Progress -->
   <div class="card progress-section" id="progressSection">
-    <div class="progress-bar-wrap">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
     <div class="stats-row">
-      <div class="stat progress"><strong id="statChecked">0</strong>/ <span id="statTotal">0</span> checked</div>
+      <div class="stat progress"><strong id="statChecked">0</strong>/<span id="statTotal">0</span> checked</div>
       <div class="stat found"><strong id="statFound">0</strong> found</div>
       <div class="stat errors"><strong id="statErrors">0</strong> errors</div>
       <div class="stat waf"><strong id="statWaf">0</strong> blocked</div>
@@ -742,151 +496,233 @@ body::before {
     <div class="results-grid" id="resultsGrid"></div>
   </div>
 
-  <!-- Empty state for no results -->
+  <!-- Empty state -->
   <div class="card" id="noResults" style="display:none;">
     <div class="empty-state">
       <div class="icon">&#x1f575;</div>
-      <p>Enter a username above to start the investigation</p>
+      <p>Enter username(s) above to start the investigation</p>
     </div>
   </div>
 
+  <!-- Footer -->
   <div class="footer">
     <div class="author-line">Created by <strong>Olivier Hoarau</strong> &mdash; <a href="mailto:tarraw974@gmail.com">tarraw974@gmail.com</a></div>
     <div>Sherlock-RS &bull; Rust rewrite of <a href="https://github.com/sherlock-project/sherlock" target="_blank" rel="noopener">Sherlock Project</a> &bull; MIT License</div>
   </div>
-</div>
+
+</div><!-- /container -->
 
 <script>
-let allResults = [];
-let eventSource = null;
-let isSearching = false;
-let statsFound = 0;
-let statsErrors = 0;
-let statsWaf = 0;
+// ── State ─────────────────────────────────────────────────────────────────────
+// tabState[username] = { results:[], found:0, errors:0, waf:0, checked:0, total:0, done:false }
+let tabState = {};
+let allUsernames  = [];
+let activeTab     = null;
+let isSearching   = false;
+let eventSource   = null;
 let renderScheduled = false;
 
-// Status check on load
+// ── Status check on load ──────────────────────────────────────────────────────
 async function checkStatus() {
   try {
-    const res = await fetch('/api/status');
+    const res  = await fetch('/api/status');
     const data = await res.json();
     if (data.ready) {
       document.getElementById('loadingCard').style.display = 'none';
-      document.getElementById('searchCard').style.display = '';
-      document.getElementById('noResults').style.display = '';
-      document.getElementById('sitesCount').textContent = data.sites_count + ' sites';
-      document.getElementById('username').focus();
+      document.getElementById('searchCard').style.display  = '';
+      document.getElementById('noResults').style.display   = '';
+      document.getElementById('sitesCount').textContent    = data.sites_count + ' sites';
+      document.getElementById('usernames').focus();
     } else if (data.error) {
       document.getElementById('loadingCard').style.display = 'none';
-      document.getElementById('errorCard').style.display = '';
-      document.getElementById('errorMsg').textContent = data.error;
+      document.getElementById('errorCard').style.display   = '';
+      document.getElementById('errorMsg').textContent      = data.error;
     } else {
       setTimeout(checkStatus, 400);
     }
-  } catch {
-    setTimeout(checkStatus, 1000);
-  }
+  } catch { setTimeout(checkStatus, 1000); }
 }
-
 checkStatus();
 
-// Search
-function startSearch() {
-  const username = document.getElementById('username').value.trim();
-  if (!username || isSearching) return;
+// ── Parse usernames ───────────────────────────────────────────────────────────
+function parseUsernames(text) {
+  const seen = new Set();
+  return text.split(/[\n,;]+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && !seen.has(s) && seen.add(s))
+    .slice(0, 10);
+}
 
-  allResults = [];
-  statsFound = 0;
-  statsErrors = 0;
-  statsWaf = 0;
+// ── Start search ──────────────────────────────────────────────────────────────
+function startSearch() {
+  const text      = document.getElementById('usernames').value.trim();
+  const usernames = parseUsernames(text);
+  if (!usernames.length || isSearching) return;
+
+  // Init state per username
+  tabState     = {};
+  allUsernames = usernames;
+  usernames.forEach(u => {
+    tabState[u] = { results:[], found:0, errors:0, waf:0, checked:0, total:0, done:false };
+  });
+
   isSearching = true;
 
-  document.getElementById('huntBtn').style.display = 'none';
-  document.getElementById('stopBtn').style.display = '';
+  // Show UI sections
+  document.getElementById('huntBtn').style.display      = 'none';
+  document.getElementById('stopBtn').style.display      = '';
   document.getElementById('progressSection').classList.add('active');
-  document.getElementById('resultsCard').style.display = '';
-  document.getElementById('noResults').style.display = 'none';
-  document.getElementById('resultsGrid').innerHTML = '';
-  document.getElementById('progressBar').style.width = '0%';
-  document.getElementById('statChecked').textContent = '0';
-  document.getElementById('statTotal').textContent = '?';
-  document.getElementById('statFound').textContent = '0';
-  document.getElementById('statErrors').textContent = '0';
-  document.getElementById('statWaf').textContent = '0';
+  document.getElementById('resultsCard').style.display  = '';
+  document.getElementById('noResults').style.display    = 'none';
+  document.getElementById('resultsGrid').innerHTML      = '';
   document.getElementById('searchingIndicator').style.display = '';
 
-  const timeout = document.getElementById('timeout').value || 30;
-  const nsfw = document.getElementById('nsfw').checked;
-  const proxy = document.getElementById('proxy').value.trim();
+  // Tabs
+  initTabs(usernames);
+  switchTab(usernames[0]);
 
-  let url = `/api/search?username=${encodeURIComponent(username)}&timeout=${timeout}&nsfw=${nsfw}`;
+  // Build SSE URL
+  const timeout = document.getElementById('timeout').value || 30;
+  const nsfw    = document.getElementById('nsfw').checked;
+  const proxy   = document.getElementById('proxy').value.trim();
+  let url = `/api/search?usernames=${encodeURIComponent(usernames.join('\n'))}&timeout=${timeout}&nsfw=${nsfw}`;
   if (proxy) url += `&proxy=${encodeURIComponent(proxy)}`;
 
   eventSource = new EventSource(url);
 
-  eventSource.addEventListener('result', (e) => {
+  eventSource.addEventListener('username_start', e => {
     const data = JSON.parse(e.data);
-    allResults.push(data);
+    tabState[data.username].total = data.total;
 
-    if (data.status === 'claimed') statsFound++;
-    else if (data.status === 'unknown') statsErrors++;
-    else if (data.status === 'waf') statsWaf++;
+    // Pulse the searching tab
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-searching'));
+    const tab = document.getElementById(tabId(data.username));
+    if (tab) tab.classList.add('tab-searching');
 
-    document.getElementById('statChecked').textContent = data.checked;
-    document.getElementById('statTotal').textContent = data.total;
-    document.getElementById('statFound').textContent = statsFound;
-    document.getElementById('statErrors').textContent = statsErrors;
-    document.getElementById('statWaf').textContent = statsWaf;
-
-    const pct = Math.round((data.checked / data.total) * 100);
-    document.getElementById('progressBar').style.width = pct + '%';
-
-    scheduleRender();
+    // Auto-switch only if no tab is manually active yet, or switch to current
+    switchTab(data.username);
   });
 
-  eventSource.addEventListener('done', (e) => {
-    searchComplete(JSON.parse(e.data));
+  eventSource.addEventListener('result', e => {
+    const d = JSON.parse(e.data);
+    const u = d.username;
+    if (!tabState[u]) return;
+
+    tabState[u].results.push(d);
+    tabState[u].checked = d.checked;
+    tabState[u].total   = d.total;
+    if (d.status === 'claimed')  tabState[u].found++;
+    else if (d.status === 'unknown') tabState[u].errors++;
+    else if (d.status === 'waf')     tabState[u].waf++;
+
+    updateTabBadge(u);
+
+    if (u === activeTab) {
+      updateProgressDisplay();
+      scheduleRender();
+    }
   });
 
-  eventSource.onerror = () => {
-    if (isSearching) searchComplete({ total_found: statsFound, total_checked: allResults.length });
-  };
+  eventSource.addEventListener('username_done', e => {
+    const data = JSON.parse(e.data);
+    tabState[data.username].done = true;
+    const tab = document.getElementById(tabId(data.username));
+    if (tab) tab.classList.remove('tab-searching');
+  });
+
+  eventSource.addEventListener('done', () => searchComplete());
+  eventSource.onerror = () => { if (isSearching) searchComplete(); };
 }
 
 function stopSearch() {
   if (eventSource) { eventSource.close(); eventSource = null; }
-  searchComplete({ total_found: statsFound, total_checked: allResults.length });
+  searchComplete();
 }
 
-function searchComplete(data) {
+function searchComplete() {
   isSearching = false;
   if (eventSource) { eventSource.close(); eventSource = null; }
   document.getElementById('huntBtn').style.display = '';
   document.getElementById('stopBtn').style.display = 'none';
   document.getElementById('searchingIndicator').style.display = 'none';
-  document.getElementById('progressBar').style.width = '100%';
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-searching'));
+  if (activeTab) { tabState[activeTab].done = true; }
+  updateProgressDisplay();
   renderResults();
 }
 
-// Rendering
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function tabId(username) {
+  return 'tab_' + username.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+function initTabs(usernames) {
+  const bar = document.getElementById('tabsBar');
+  if (usernames.length < 2) {
+    bar.style.display = 'none';
+    bar.innerHTML     = '';
+    return;
+  }
+  bar.style.display = 'flex';
+  bar.innerHTML = usernames.map(u => `
+    <button class="tab-btn" id="${tabId(u)}" onclick="switchTab(${JSON.stringify(u)})">
+      <span>${escHtml(u)}</span>
+      <span class="tab-badge" id="${tabId(u)}_badge">0</span>
+    </button>
+  `).join('');
+}
+
+function switchTab(username) {
+  activeTab = username;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+  const tab = document.getElementById(tabId(username));
+  if (tab) tab.classList.add('tab-active');
+  updateProgressDisplay();
+  renderResults();
+}
+
+function updateTabBadge(username) {
+  const badge = document.getElementById(`${tabId(username)}_badge`);
+  if (badge) badge.textContent = tabState[username].found;
+}
+
+// ── Progress ──────────────────────────────────────────────────────────────────
+function updateProgressDisplay() {
+  if (!activeTab || !tabState[activeTab]) return;
+  const s = tabState[activeTab];
+  const pct = s.total > 0 ? Math.round((s.checked / s.total) * 100) : 0;
+
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('statChecked').textContent = s.checked;
+  document.getElementById('statTotal').textContent   = s.total || '?';
+  document.getElementById('statFound').textContent   = s.found;
+  document.getElementById('statErrors').textContent  = s.errors;
+  document.getElementById('statWaf').textContent     = s.waf;
+
+  document.getElementById('searchingIndicator').style.display =
+    (!s.done && isSearching) ? '' : 'none';
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
 function scheduleRender() {
   if (!renderScheduled) {
     renderScheduled = true;
-    requestAnimationFrame(() => {
-      renderResults();
-      renderScheduled = false;
-    });
+    requestAnimationFrame(() => { renderResults(); renderScheduled = false; });
   }
 }
 
-const statusOrder = { claimed: 0, waf: 1, unknown: 2, illegal: 3, available: 4 };
+const statusOrder = { claimed:0, waf:1, unknown:2, illegal:3, available:4 };
 
 function renderResults() {
-  const filter = document.getElementById('filterInput').value.toLowerCase();
-  const sortBy = document.getElementById('sortSelect').value;
-  const foundOnly = document.getElementById('foundOnly').checked;
+  if (!activeTab || !tabState[activeTab]) return;
 
-  let filtered = allResults.filter(r => {
+  const filter   = document.getElementById('filterInput').value.toLowerCase();
+  const sortBy   = document.getElementById('sortSelect').value;
+  const foundOnly= document.getElementById('foundOnly').checked;
+
+  let results = tabState[activeTab].results;
+
+  let filtered = results.filter(r => {
     if (foundOnly && r.status !== 'claimed') return false;
     if (filter && !r.site_name.toLowerCase().includes(filter)) return false;
     return true;
@@ -895,106 +731,77 @@ function renderResults() {
   filtered.sort((a, b) => {
     if (sortBy === 'name') return a.site_name.localeCompare(b.site_name);
     if (sortBy === 'time') return (a.response_time_ms || 99999) - (b.response_time_ms || 99999);
-    // status
     return (statusOrder[a.status] ?? 5) - (statusOrder[b.status] ?? 5);
   });
 
-  const grid = document.getElementById('resultsGrid');
-  grid.innerHTML = filtered.map(r => resultRowHtml(r)).join('');
-}
-
-function resultRowHtml(r) {
-  const badge = `<span class="badge badge-${r.status}">${badgeLabel(r.status)}</span>`;
-  const time = r.response_time_ms != null ? `${r.response_time_ms}ms` : '-';
-  const urlDisplay = r.status === 'claimed'
-    ? `<a href="${escHtml(r.site_url)}" target="_blank" rel="noopener">${escHtml(r.site_url)}</a>`
-    : escHtml(r.site_url);
-  const copyDisplay = r.status === 'claimed'
-    ? `<button class="copy-btn" onclick="copyUrl('${escAttr(r.site_url)}')" title="Copy URL">&#x1f4cb;</button>`
-    : '';
-
-  return `<div class="result-row">
-    <div class="result-site">${escHtml(r.site_name)}</div>
-    <div class="result-url">${urlDisplay}</div>
-    ${badge}
-    <div class="result-time">${time}</div>
-    ${copyDisplay}
-  </div>`;
+  document.getElementById('resultsGrid').innerHTML = filtered.map(resultRowHtml).join('');
 }
 
 function badgeLabel(status) {
-  switch (status) {
-    case 'claimed': return '&#x2713; Found';
-    case 'available': return 'Not Found';
-    case 'unknown': return 'Error';
-    case 'illegal': return 'Invalid';
-    case 'waf': return 'Blocked';
-    default: return status;
-  }
+  return { claimed:'&#x2713; Found', available:'Not Found', unknown:'Error', illegal:'Invalid', waf:'Blocked' }[status] || status;
 }
 
+function resultRowHtml(r) {
+  const time = r.response_time_ms != null ? r.response_time_ms + 'ms' : '-';
+  const urlHtml = r.status === 'claimed'
+    ? `<a href="${escHtml(r.site_url)}" target="_blank" rel="noopener">${escHtml(r.site_url)}</a>`
+    : escHtml(r.site_url);
+  const copyHtml = r.status === 'claimed'
+    ? `<button class="copy-btn" onclick="copyUrl(${JSON.stringify(r.site_url)})" title="Copy URL">&#x1f4cb;</button>`
+    : '<span></span>';
+
+  return `<div class="result-row">
+    <div class="result-site">${escHtml(r.site_name)}</div>
+    <div class="result-url">${urlHtml}</div>
+    <span class="badge badge-${r.status}">${badgeLabel(r.status)}</span>
+    <div class="result-time">${time}</div>
+    ${copyHtml}
+  </div>`;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function escHtml(s) {
   const d = document.createElement('div');
   d.textContent = s;
   return d.innerHTML;
 }
 
-function escAttr(s) {
-  return s.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-}
-
-// Clipboard
 function copyUrl(url) {
   navigator.clipboard.writeText(url).then(() => showToast('URL copied!'));
 }
 
 function showToast(msg) {
   const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
+  t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2100);
 }
 
-// Export
-function exportCsv() {
-  window.location.href = '/api/export/csv';
-}
+function exportCsv() { window.location.href = '/api/export/csv'; }
+function exportTxt()  { window.location.href = '/api/export/txt'; }
 
-function exportTxt() {
-  window.location.href = '/api/export/txt';
-}
-
-// Update DB
 async function updateDb() {
   const btn = document.getElementById('updateBtn');
-  btn.textContent = 'Updating...';
-  btn.disabled = true;
+  btn.textContent = 'Updating...'; btn.disabled = true;
   try {
-    const res = await fetch('/api/update-db', { method: 'POST' });
+    const res  = await fetch('/api/update-db', { method: 'POST' });
     const data = await res.json();
     if (data.success) {
       showToast(`Database updated: ${data.sites_count} sites`);
       document.getElementById('sitesCount').textContent = data.sites_count + ' sites';
     } else {
-      showToast('Update failed: ' + (data.error || 'Unknown error'));
+      showToast('Update failed: ' + (data.error || 'unknown error'));
     }
-  } catch (e) {
-    showToast('Update failed: ' + e.message);
-  }
-  btn.innerHTML = '&#x21bb; Update DB';
-  btn.disabled = false;
+  } catch (e) { showToast('Update failed: ' + e.message); }
+  btn.innerHTML = '&#x21bb; Update DB'; btn.disabled = false;
 }
 
-// Keyboard shortcut
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && document.activeElement.id === 'username') {
-    e.preventDefault();
-    startSearch();
+// ── Keyboard shortcuts ────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && document.activeElement.id === 'usernames') {
+    e.preventDefault(); startSearch();
   }
-  if (e.key === 'Escape' && isSearching) {
-    stopSearch();
-  }
+  if (e.key === 'Escape' && isSearching) stopSearch();
 });
 </script>
 </body>

@@ -1,6 +1,6 @@
 use crate::checker::{self, CheckConfig};
 use crate::export;
-use crate::result::QueryResult;
+use crate::result::{QueryResult, QueryStatus};
 use crate::sites::{self, SiteData};
 use axum::extract::{Query, State};
 use axum::http::header;
@@ -20,7 +20,6 @@ const FRONTEND_HTML: &str = include_str!("../frontend/index.html");
 pub struct AppState {
     pub sites: RwLock<Option<HashMap<String, SiteData>>>,
     pub last_results: RwLock<Vec<QueryResult>>,
-    pub last_username: RwLock<String>,
     pub load_error: RwLock<Option<String>>,
 }
 
@@ -29,7 +28,6 @@ impl AppState {
         Self {
             sites: RwLock::new(None),
             last_results: RwLock::new(Vec::new()),
-            last_username: RwLock::new(String::new()),
             load_error: RwLock::new(None),
         }
     }
@@ -69,7 +67,7 @@ async fn status_handler(State(state): State<Arc<AppState>>) -> Json<StatusRespon
 
 #[derive(Deserialize)]
 struct SearchParams {
-    username: String,
+    usernames: String, // comma/newline-separated list
     timeout: Option<u64>,
     nsfw: Option<bool>,
     proxy: Option<String>,
@@ -77,6 +75,7 @@ struct SearchParams {
 
 #[derive(Serialize)]
 struct SseResultData {
+    username: String,
     site_name: String,
     url_main: String,
     site_url: String,
@@ -90,87 +89,144 @@ async fn search_handler(
     State(state): State<Arc<AppState>>,
     Query(params): Query<SearchParams>,
 ) -> Sse<impl tokio_stream::Stream<Item = Result<Event, Infallible>>> {
-    let (sse_tx, sse_rx) = tokio::sync::mpsc::channel::<Result<Event, Infallible>>(200);
+    let (sse_tx, sse_rx) = tokio::sync::mpsc::channel::<Result<Event, Infallible>>(500);
+
+    // Parse and deduplicate usernames
+    let usernames: Vec<String> = {
+        let mut seen = std::collections::HashSet::new();
+        params
+            .usernames
+            .split(|c: char| c == ',' || c == '\n' || c == ';')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty() && seen.insert(s.clone()))
+            .take(10)
+            .collect()
+    };
+
+    if usernames.is_empty() {
+        let (_, rx) = tokio::sync::mpsc::channel::<Result<Event, Infallible>>(1);
+        return Sse::new(ReceiverStream::new(rx)).keep_alive(KeepAlive::default());
+    }
 
     let sites_guard = state.sites.read().await;
     let sites = sites_guard.clone().unwrap_or_default();
     drop(sites_guard);
 
-    // Filter out NSFW if needed
     let include_nsfw = params.nsfw.unwrap_or(false);
     let total: usize = sites
         .values()
         .filter(|s| include_nsfw || !s.is_nsfw.unwrap_or(false))
         .count();
 
+    let timeout_secs = params.timeout.unwrap_or(30);
+    let proxy = params.proxy.clone();
+
     // Clear previous results
-    {
-        let mut results = state.last_results.write().await;
-        results.clear();
-        let mut uname = state.last_username.write().await;
-        *uname = params.username.clone();
-    }
-
-    let username = params.username.clone();
-    let config = CheckConfig {
-        timeout_secs: params.timeout.unwrap_or(30),
-        include_nsfw,
-        proxy: params.proxy.clone(),
-    };
-
-    let state_clone = state.clone();
+    state.last_results.write().await.clear();
 
     tokio::spawn(async move {
-        let (checker_tx, mut checker_rx) = tokio::sync::mpsc::channel::<QueryResult>(200);
+        for username in &usernames {
+            // ── username_start ────────────────────────────────────────────────
+            let start_json = serde_json::to_string(&serde_json::json!({
+                "username": username,
+                "total": total,
+            }))
+            .unwrap_or_default();
 
-        let checker_handle = tokio::spawn(async move {
-            checker::check_username(&username, &sites, &config, checker_tx).await;
-        });
+            if sse_tx
+                .send(Ok(Event::default()
+                    .event("username_start")
+                    .data(start_json)))
+                .await
+                .is_err()
+            {
+                return;
+            }
 
-        let mut checked: usize = 0;
+            // ── Run checker ───────────────────────────────────────────────────
+            let (checker_tx, mut checker_rx) =
+                tokio::sync::mpsc::channel::<QueryResult>(300);
 
-        while let Some(result) = checker_rx.recv().await {
-            checked += 1;
-
-            let event_data = SseResultData {
-                site_name: result.site_name.clone(),
-                url_main: result.url_main.clone(),
-                site_url: result.site_url.clone(),
-                status: result.status.as_str().to_string(),
-                response_time_ms: result.response_time_ms,
-                checked,
-                total,
+            let sites_clone = sites.clone();
+            let uname = username.clone();
+            let config = CheckConfig {
+                timeout_secs,
+                include_nsfw,
+                proxy: proxy.clone(),
             };
 
-            state_clone.last_results.write().await.push(result);
+            tokio::spawn(async move {
+                checker::check_username(&uname, &sites_clone, &config, checker_tx).await;
+            });
 
-            let json = serde_json::to_string(&event_data).unwrap_or_default();
-            let event = Event::default().event("result").data(json);
+            let mut checked = 0usize;
+            let mut found = 0usize;
 
-            if sse_tx.send(Ok(event)).await.is_err() {
-                break;
+            while let Some(result) = checker_rx.recv().await {
+                checked += 1;
+                if result.status == QueryStatus::Claimed {
+                    found += 1;
+                }
+
+                let event_data = SseResultData {
+                    username: username.clone(),
+                    site_name: result.site_name.clone(),
+                    url_main: result.url_main.clone(),
+                    site_url: result.site_url.clone(),
+                    status: result.status.as_str().to_string(),
+                    response_time_ms: result.response_time_ms,
+                    checked,
+                    total,
+                };
+
+                state.last_results.write().await.push(result);
+
+                let json = serde_json::to_string(&event_data).unwrap_or_default();
+                if sse_tx
+                    .send(Ok(Event::default().event("result").data(json)))
+                    .await
+                    .is_err()
+                {
+                    return;
+                }
+            }
+
+            // ── username_done ─────────────────────────────────────────────────
+            let done_json = serde_json::to_string(&serde_json::json!({
+                "username": username,
+                "found": found,
+                "checked": checked,
+            }))
+            .unwrap_or_default();
+
+            if sse_tx
+                .send(Ok(Event::default()
+                    .event("username_done")
+                    .data(done_json)))
+                .await
+                .is_err()
+            {
+                return;
             }
         }
 
-        let _ = checker_handle.await;
-
-        // Send completion event
-        let found = state_clone
+        // ── Overall done ──────────────────────────────────────────────────────
+        let total_found = state
             .last_results
             .read()
             .await
             .iter()
-            .filter(|r| r.status == crate::result::QueryStatus::Claimed)
+            .filter(|r| r.status == QueryStatus::Claimed)
             .count();
 
-        let done_json = serde_json::to_string(&serde_json::json!({
-            "total_found": found,
-            "total_checked": checked,
-        }))
-        .unwrap_or_default();
-
         let _ = sse_tx
-            .send(Ok(Event::default().event("done").data(done_json)))
+            .send(Ok(Event::default().event("done").data(
+                serde_json::to_string(&serde_json::json!({
+                    "total_found": total_found,
+                    "total_usernames": usernames.len(),
+                }))
+                .unwrap_or_default(),
+            )))
             .await;
     });
 
@@ -194,8 +250,7 @@ async fn export_csv_handler(State(state): State<Arc<AppState>>) -> impl IntoResp
 
 async fn export_txt_handler(State(state): State<Arc<AppState>>) -> impl IntoResponse {
     let results = state.last_results.read().await;
-    let username = state.last_username.read().await;
-    let txt_data = export::to_txt(&username, &results);
+    let txt_data = export::to_txt(&results);
     (
         [
             (header::CONTENT_TYPE, "text/plain; charset=utf-8"),

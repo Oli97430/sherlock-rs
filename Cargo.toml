@@ -18,6 +18,7 @@ dirs = "6"
 csv = "1"
 tokio-stream = "0.1"
 anyhow = "1"
+rand = "0.8"
 
 [profile.release]
 opt-level = 3

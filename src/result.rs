@@ -24,6 +24,7 @@ impl QueryStatus {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct QueryResult {
+    pub username: String,
     pub site_name: String,
     pub url_main: String,
     pub site_url: String,

@@ -1,13 +1,63 @@
 use crate::result::{QueryResult, QueryStatus};
 use crate::sites::SiteData;
+use rand::seq::SliceRandom;
 use regex::Regex;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::{mpsc, Semaphore};
+use tokio::time::sleep;
 
-const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+// ── 25 real browser User-Agents ─────────────────────────────────────────────
+const USER_AGENTS: &[&str] = &[
+    // Chrome Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+    // Chrome macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    // Chrome Linux
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    // Firefox Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0",
+    // Firefox macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:133.0) Gecko/20100101 Firefox/133.0",
+    // Firefox Linux
+    "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0",
+    // Edge Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
+    // Edge macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
+    // Safari macOS
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+    // Safari iOS
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1",
+    // Chrome Android
+    "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+    // Opera
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 OPR/116.0.0.0",
+    // Brave (same UA as Chrome, different internals)
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+];
 
+fn random_ua() -> &'static str {
+    USER_AGENTS
+        .choose(&mut rand::thread_rng())
+        .copied()
+        .unwrap_or(USER_AGENTS[0])
+}
+
+// ── WAF signatures ────────────────────────────────────────────────────────────
 const WAF_SIGNATURES: &[&str] = &[
     "Attention Required! | Cloudflare",
     "cf-browser-verification",
@@ -16,6 +66,7 @@ const WAF_SIGNATURES: &[&str] = &[
     "Checking your browser",
     "Pardon Our Interruption",
     "Access denied | ",
+    "_cf_chl_opt",
 ];
 
 pub struct CheckConfig {
@@ -30,14 +81,16 @@ pub async fn check_username(
     config: &CheckConfig,
     tx: mpsc::Sender<QueryResult>,
 ) {
+    let base_ua = random_ua();
+
     let mut client_builder = reqwest::Client::builder()
         .timeout(Duration::from_secs(config.timeout_secs))
-        .user_agent(USER_AGENT)
+        .user_agent(base_ua)
         .danger_accept_invalid_certs(false);
 
     let mut client_no_redir_builder = reqwest::Client::builder()
         .timeout(Duration::from_secs(config.timeout_secs))
-        .user_agent(USER_AGENT)
+        .user_agent(base_ua)
         .redirect(reqwest::redirect::Policy::none())
         .danger_accept_invalid_certs(false);
 
@@ -54,9 +107,7 @@ pub async fn check_username(
     let client_no_redir = client_no_redir_builder.build().unwrap_or_default();
 
     let semaphore = Arc::new(Semaphore::new(20));
-    let (result_tx, mut result_rx) = mpsc::channel::<QueryResult>(200);
-
-    let mut spawned = 0usize;
+    let (result_tx, mut result_rx) = mpsc::channel::<QueryResult>(300);
 
     for (name, site) in sites.iter() {
         if !config.include_nsfw && site.is_nsfw.unwrap_or(false) {
@@ -68,6 +119,7 @@ pub async fn check_username(
                 if !re.is_match(username) {
                     let _ = result_tx
                         .send(QueryResult {
+                            username: username.to_string(),
                             site_name: name.clone(),
                             url_main: site.url_main.clone(),
                             site_url: site.url.replace("{}", username),
@@ -76,7 +128,6 @@ pub async fn check_username(
                             context: Some("Invalid username format for this site".into()),
                         })
                         .await;
-                    spawned += 1;
                     continue;
                 }
             }
@@ -92,29 +143,64 @@ pub async fn check_username(
 
         tokio::spawn(async move {
             let _permit = sem.acquire().await.unwrap();
-            let result = check_site(&name, &site, &username, &c, &cnr).await;
+            let result = check_site_with_retry(&name, &site, &username, &c, &cnr).await;
             let _ = rtx.send(result).await;
         });
-
-        spawned += 1;
     }
 
     drop(result_tx);
 
-    let mut count = 0usize;
-    while let Some(mut result) = result_rx.recv().await {
-        count += 1;
-        // Tag with progress info via context (hacky but avoids changing the struct)
-        let progress = format!("{}/{}", count, spawned);
-        if result.context.is_none() {
-            result.context = Some(progress);
-        }
+    while let Some(result) = result_rx.recv().await {
         if tx.send(result).await.is_err() {
             break;
         }
     }
 }
 
+// ── Retry wrapper: up to 3 attempts with exponential backoff ─────────────────
+async fn check_site_with_retry(
+    name: &str,
+    site: &SiteData,
+    username: &str,
+    client: &reqwest::Client,
+    client_no_redir: &reqwest::Client,
+) -> QueryResult {
+    const MAX_ATTEMPTS: u32 = 3;
+    let mut last: Option<QueryResult> = None;
+
+    for attempt in 0..MAX_ATTEMPTS {
+        if attempt > 0 {
+            // Exponential backoff: 500ms → 1000ms
+            sleep(Duration::from_millis(500 * (1u64 << (attempt - 1)))).await;
+        }
+
+        let result = check_site(name, site, username, client, client_no_redir).await;
+
+        let is_network_error = matches!(result.status, QueryStatus::Unknown)
+            && result
+                .context
+                .as_deref()
+                .map(|c| c.starts_with("NET:"))
+                .unwrap_or(false);
+
+        if !is_network_error {
+            return result;
+        }
+
+        last = Some(result);
+    }
+
+    // All retries exhausted — clean context for display
+    let mut final_result = last.unwrap();
+    if let Some(ctx) = final_result.context.as_mut() {
+        if let Some(stripped) = ctx.strip_prefix("NET: ") {
+            *ctx = format!("{} (after {} retries)", stripped, MAX_ATTEMPTS - 1);
+        }
+    }
+    final_result
+}
+
+// ── Core request function ─────────────────────────────────────────────────────
 async fn check_site(
     name: &str,
     site: &SiteData,
@@ -144,7 +230,10 @@ async fn check_site(
 
     let start = Instant::now();
 
-    let mut request = active_client.request(method, &probe_url);
+    // Override UA per request for rotation
+    let mut request = active_client
+        .request(method, &probe_url)
+        .header(reqwest::header::USER_AGENT, random_ua());
 
     if let Some(headers) = &site.headers {
         for (k, v) in headers {
@@ -169,6 +258,7 @@ async fn check_site(
             let status = determine_status(site, status_code, &body);
 
             QueryResult {
+                username: username.to_string(),
                 site_name: name.to_string(),
                 url_main: site.url_main.clone(),
                 site_url: url,
@@ -179,13 +269,20 @@ async fn check_site(
         }
         Err(e) => {
             let elapsed = start.elapsed().as_millis() as u64;
+            // Tag network errors so retry logic can identify them
+            let prefix = if e.is_timeout() || e.is_connect() {
+                "NET: "
+            } else {
+                "Error: "
+            };
             QueryResult {
+                username: username.to_string(),
                 site_name: name.to_string(),
                 url_main: site.url_main.clone(),
                 site_url: url,
                 status: QueryStatus::Unknown,
                 response_time_ms: Some(elapsed),
-                context: Some(format!("Error: {}", e)),
+                context: Some(format!("{}{}", prefix, e)),
             }
         }
     }
