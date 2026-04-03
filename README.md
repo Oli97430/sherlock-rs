@@ -14,59 +14,59 @@
 
 # SHERLOCK-RS
 
-**Traque les comptes sur les réseaux sociaux à partir d'un pseudo — Édition Rust**
+**Hunt social media accounts by username — Rust Edition**
 
 [![Rust](https://img.shields.io/badge/Rust-1.94+-orange?style=flat-square&logo=rust)](https://www.rust-lang.org/)
-[![Licence](https://img.shields.io/badge/Licence-MIT-blue?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 [![Sites](https://img.shields.io/badge/Sites-478+-brightgreen?style=flat-square)](https://github.com/sherlock-project/sherlock)
-[![Plateforme](https://img.shields.io/badge/Plateforme-Windows-0078D4?style=flat-square&logo=windows)](https://github.com/Oli97430/sherlock-rs/releases)
-[![Auteur](https://img.shields.io/badge/Auteur-Olivier%20Hoarau-purple?style=flat-square)](mailto:tarraw974@gmail.com)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square&logo=windows)](https://github.com/Oli97430/sherlock-rs/releases)
+[![Author](https://img.shields.io/badge/Author-Olivier%20Hoarau-purple?style=flat-square)](mailto:tarraw974@gmail.com)
 
-*Réécriture complète en Rust de [Sherlock](https://github.com/sherlock-project/sherlock) avec une interface web sombre et moderne — un seul `.exe`, zéro installation.*
+*A complete Rust rewrite of [Sherlock](https://github.com/sherlock-project/sherlock) with a modern dark web UI — single `.exe`, zero installation.*
 
 </div>
 
 ---
 
-## Présentation
+## Overview
 
-**Sherlock-RS** analyse **478+ plateformes sociales** en parallèle pour déterminer si un nom d'utilisateur existe. Il suffit de lancer l'exe : un serveur local démarre, le navigateur s'ouvre automatiquement et les résultats arrivent en temps réel.
+**Sherlock-RS** scans **478+ social platforms** in parallel to check whether a username exists. Just run the exe: a local server starts, your browser opens automatically, and results stream in real time.
 
-> **Nouveau :** Recherche multi-pseudos simultanée avec onglets, rotation automatique de 25 User-Agents réels, et système de retry intelligent sur erreurs réseau.
+> **New:** Simultaneous multi-username search with tabs, automatic rotation of 25 real User-Agents, and smart retry logic on network errors.
 
 ---
 
-## Fonctionnalités
+## Features
 
-| Fonctionnalité | Détail |
+| Feature | Details |
 |---|---|
-| 🔍 **478+ sites analysés** | Base de données Sherlock officielle, mise à jour en un clic depuis l'interface |
-| 👥 **Multi-pseudos** | Saisir plusieurs noms d'un coup (virgule ou retour à la ligne), résultats par onglets |
-| ⚡ **Parallélisme** | 20 requêtes simultanées via Tokio async — scan complet en quelques minutes |
-| 🔄 **Rotation User-Agent** | 25 vrais navigateurs (Chrome, Firefox, Edge, Safari, Opera…) tournés aléatoirement par requête |
-| 🔁 **Retry intelligent** | 3 tentatives avec backoff exponentiel (500 ms / 1 000 ms) sur erreurs réseau uniquement |
-| 🎨 **Interface moderne** | UI web dark theme avec résultats en temps réel (Server-Sent Events) |
-| 🛡️ **Détection WAF** | Cloudflare, PerimeterX, AWS CloudFront détectés et signalés |
-| 🧅 **Proxy / Tor** | Support SOCKS5 natif (`socks5://127.0.0.1:9050` pour Tor) |
-| 📥 **Export** | Téléchargement des résultats en CSV (tableur) ou TXT |
-| 🔎 **Filtrage & tri** | Tri par nom, statut ou temps de réponse — filtre textuel en direct |
-| 📦 **Zéro installation** | Un seul `.exe` autonome de 5 Mo, aucune dépendance requise |
+| 🔍 **478+ sites scanned** | Official Sherlock database, one-click update from the UI |
+| 👥 **Multi-username** | Enter multiple names at once (comma or newline), results per tab |
+| ⚡ **Parallel scanning** | 20 concurrent requests via Tokio async — full scan in minutes |
+| 🔄 **User-Agent rotation** | 25 real browsers (Chrome, Firefox, Edge, Safari, Opera…) rotated randomly per request |
+| 🔁 **Smart retry** | 3 attempts with exponential backoff (500 ms / 1 000 ms) on network errors only |
+| 🎨 **Modern UI** | Dark-themed web interface with real-time results (Server-Sent Events) |
+| 🛡️ **WAF detection** | Cloudflare, PerimeterX, AWS CloudFront detected and flagged |
+| 🧅 **Proxy / Tor** | Native SOCKS5 support (`socks5://127.0.0.1:9050` for Tor) |
+| 📥 **Export** | Download results as CSV (spreadsheet) or TXT |
+| 🔎 **Filter & sort** | Sort by name, status or response time — live text filter |
+| 📦 **Zero install** | Single self-contained 5 MB `.exe`, no dependencies required |
 
 ---
 
 ## Installation
 
-### Méthode rapide — Télécharger l'exécutable
+### Quick method — Download the binary
 
-1. Télécharge la dernière version depuis la page [**Releases**](https://github.com/Oli97430/sherlock-rs/releases)
-2. Double-clique sur `sherlock-rs.exe`
-3. Le navigateur s'ouvre automatiquement — c'est tout
+1. Download the latest release from the [**Releases**](https://github.com/Oli97430/sherlock-rs/releases) page
+2. Double-click `sherlock-rs.exe`
+3. Your browser opens automatically — that's it
 
-### Compiler depuis les sources
+### Build from source
 
-**Prérequis :**
-- [Rust](https://rustup.rs/) (installe via `rustup`)
-- [Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/fr/downloads/) avec la charge de travail *Développement Desktop en C++*
+**Requirements:**
+- [Rust](https://rustup.rs/) (install via `rustup`)
+- [Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/downloads/) with the *Desktop development with C++* workload
 
 ```bash
 git clone https://github.com/Oli97430/sherlock-rs.git
@@ -74,73 +74,73 @@ cd sherlock-rs
 cargo build --release
 ```
 
-L'exécutable se trouve ensuite dans `target/release/sherlock-rs.exe`.
+The binary will be located at `target/release/sherlock-rs.exe`.
 
 ---
 
-## Utilisation
+## Usage
 
 ```bash
 sherlock-rs.exe
 ```
 
-Le programme démarre un serveur local sur un port aléatoire et ouvre ton navigateur par défaut. Aucune commande supplémentaire n'est nécessaire.
+The program starts a local server on a random port and opens your default browser. No extra commands needed.
 
-### Étapes de base
+### Basic steps
 
-1. Saisis un ou plusieurs pseudos à rechercher (séparés par une virgule ou un retour à la ligne)
-2. Ajuste les options si besoin (timeout, proxy, NSFW)
-3. Clique sur **Hunt** ou appuie sur `Entrée`
-4. Les résultats apparaissent en temps réel, site par site
-5. Exporte les résultats en CSV ou TXT via les boutons dédiés
+1. Enter one or more usernames to search (separated by comma or newline)
+2. Adjust options if needed (timeout, proxy, NSFW)
+3. Click **Hunt** or press `Enter`
+4. Results appear in real time, site by site
+5. Export results as CSV or TXT via the dedicated buttons
 
-### Recherche multi-pseudos
+### Multi-username search
 
-Le champ de saisie accepte plusieurs noms d'un coup :
+The input field accepts multiple names at once:
 
 ```
 johndoe
 janedoe, alice
 ```
 
-Chaque pseudo obtient son propre onglet avec un compteur de comptes trouvés mis à jour en direct. L'onglet en cours de scan pulse en bleu.
+Each username gets its own tab with a live counter of accounts found. The tab being scanned pulses in blue.
 
-### Options de l'interface
+### Interface options
 
 | Option | Description |
 |---|---|
-| **Timeout** | Durée maximale d'attente par requête (défaut : 30 s, min : 5 s) |
-| **NSFW** | Inclure les plateformes à contenu adulte dans la recherche |
-| **Proxy** | URL d'un proxy SOCKS5 ou HTTP, ex. `socks5://127.0.0.1:9050` pour Tor |
-| **Update DB** | Télécharge la dernière base de données des sites depuis GitHub |
+| **Timeout** | Maximum wait time per request (default: 30 s, min: 5 s) |
+| **NSFW** | Include adult content platforms in the search |
+| **Proxy** | SOCKS5 or HTTP proxy URL, e.g. `socks5://127.0.0.1:9050` for Tor |
+| **Update DB** | Downloads the latest site database from GitHub |
 
-### Raccourcis clavier
+### Keyboard shortcuts
 
-| Touche | Action |
+| Key | Action |
 |---|---|
-| `Entrée` | Lancer la recherche (dans le champ pseudo) |
-| `Shift + Entrée` | Passer à la ligne dans le champ (multi-pseudos) |
-| `Échap` | Stopper la recherche en cours |
+| `Enter` | Start search (from the username field) |
+| `Shift + Enter` | Add a new line (multi-username input) |
+| `Escape` | Stop the current search |
 
 ---
 
-## Fonctionnement technique
+## How it works
 
-### Méthodes de détection
+### Detection methods
 
-Sherlock-RS reprend fidèlement les 3 méthodes de détection du projet original :
+Sherlock-RS faithfully implements the 3 detection methods from the original project:
 
-| Type | Logique |
+| Type | Logic |
 |---|---|
-| `status_code` | Code HTTP 404 (ou code personnalisé) → absent ; 200-299 → présent |
-| `message` | Texte d'erreur spécifique trouvé dans le corps de la réponse → absent |
-| `response_url` | Redirections désactivées ; code 200-299 → présent, sinon absent |
+| `status_code` | HTTP 404 (or custom code) → not found; 200-299 → found |
+| `message` | Specific error text found in response body → not found |
+| `response_url` | Redirects disabled; 200-299 → found, otherwise not found |
 
-La détection WAF (Cloudflare, PerimeterX…) est appliquée **en priorité** avant toute autre logique afin d'éviter les faux positifs. Les résultats bloqués sont signalés séparément avec le statut **Bloqué**.
+WAF detection (Cloudflare, PerimeterX…) is applied **first**, before any other logic, to avoid false positives. Blocked results are reported separately with the **Blocked** status.
 
-### Rotation des User-Agents
+### User-Agent rotation
 
-Chaque requête individuelle choisit aléatoirement un User-Agent parmi 25 navigateurs réels modernes :
+Each individual request randomly picks a User-Agent from 25 real modern browsers:
 
 - Chrome 128–131 (Windows, macOS, Linux, Android)
 - Firefox 130–133 (Windows, macOS, Linux)
@@ -148,81 +148,81 @@ Chaque requête individuelle choisit aléatoirement un User-Agent parmi 25 navig
 - Safari 17 (macOS, iOS)
 - Opera 116, Brave
 
-Cela réduit considérablement les blocages basés sur la reconnaissance de robots.
+This significantly reduces bot-detection-based blocking.
 
-### Retry avec backoff exponentiel
+### Exponential backoff retry
 
-En cas d'erreur réseau (timeout, connexion refusée, DNS) :
+On network errors (timeout, connection refused, DNS failure):
 
 ```
-Tentative 1  →  échoue  →  attente 500 ms
-Tentative 2  →  échoue  →  attente 1 000 ms
-Tentative 3  →  résultat final (réussite ou erreur affichée)
+Attempt 1  →  fails  →  wait 500 ms
+Attempt 2  →  fails  →  wait 1 000 ms
+Attempt 3  →  final result (success or error displayed)
 ```
 
-Les réponses HTTP valides (même 403 ou 404) ne déclenchent **pas** de retry.
+Valid HTTP responses (even 403 or 404) do **not** trigger a retry.
 
 ---
 
-## Statuts des résultats
+## Result statuses
 
-| Statut | Signification | Conseil |
+| Status | Meaning | Tip |
 |---|---|---|
-| ✅ **Trouvé** | Compte détecté sur la plateforme | Clique sur l'URL pour ouvrir le profil |
-| ❌ **Non trouvé** | Aucun compte à ce nom | — |
-| ⚠️ **Bloqué** | Bloqué par un WAF (Cloudflare…) | Réessaie avec un proxy ou Tor |
-| 🔴 **Erreur** | Erreur réseau ou timeout après 3 tentatives | Augmente le timeout |
-| ⬜ **Invalide** | Le format du pseudo ne correspond pas aux règles du site | Normal pour certains sites |
+| ✅ **Found** | Account detected on the platform | Click the URL to open the profile |
+| ❌ **Not found** | No account under this name | — |
+| ⚠️ **Blocked** | Blocked by a WAF (Cloudflare…) | Retry with a proxy or Tor |
+| 🔴 **Error** | Network error or timeout after 3 attempts | Increase the timeout |
+| ⬜ **Invalid** | Username format doesn't match the site's rules | Normal for some sites |
 
 ---
 
-## Architecture du code
+## Code architecture
 
 ```
 sherlock-rs/
-├── Cargo.toml              # Dépendances et métadonnées du projet
+├── Cargo.toml              # Dependencies and project metadata
 ├── src/
-│   ├── main.rs             # Point d'entrée, bannière console, démarrage serveur
-│   ├── server.rs           # Serveur Axum : routes REST + streaming SSE
-│   ├── checker.rs          # Moteur de scan async : rotation UA, retry, détection
-│   ├── sites.rs            # Chargement et parsing de data.json (cache local + GitHub)
-│   ├── result.rs           # Types : QueryStatus (enum), QueryResult (struct)
-│   └── export.rs           # Génération CSV et TXT groupés par pseudo
+│   ├── main.rs             # Entry point, console banner, server startup
+│   ├── server.rs           # Axum server: REST routes + SSE streaming
+│   ├── checker.rs          # Async scan engine: UA rotation, retry, detection
+│   ├── sites.rs            # Load and parse data.json (local cache + GitHub)
+│   ├── result.rs           # Types: QueryStatus (enum), QueryResult (struct)
+│   └── export.rs           # CSV and TXT export grouped by username
 └── frontend/
-    └── index.html          # Interface complète embarquée dans le binaire (HTML/CSS/JS)
+    └── index.html          # Full UI embedded in the binary (HTML/CSS/JS)
 ```
 
-### Bibliothèques utilisées (crates Rust)
+### Rust crates used
 
-| Rôle | Crate |
+| Role | Crate |
 |---|---|
-| Runtime asynchrone | `tokio 1` |
-| Serveur web + SSE | `axum 0.7` |
-| Client HTTP | `reqwest 0.12` |
-| Sérialisation JSON | `serde` + `serde_json` |
-| Expressions régulières | `regex` |
-| Aléatoire (rotation UA) | `rand 0.8` |
-| Export CSV | `csv` |
-| Ouverture du navigateur | `open` |
-| Répertoires système | `dirs` |
-| Gestion d'erreurs | `anyhow` |
+| Async runtime | `tokio 1` |
+| Web server + SSE | `axum 0.7` |
+| HTTP client | `reqwest 0.12` |
+| JSON serialization | `serde` + `serde_json` |
+| Regular expressions | `regex` |
+| Randomness (UA rotation) | `rand 0.8` |
+| CSV export | `csv` |
+| Browser launcher | `open` |
+| System directories | `dirs` |
+| Error handling | `anyhow` |
 
 ---
 
-## Crédits
+## Credits
 
-- **Auteur** : Olivier Hoarau — [tarraw974@gmail.com](mailto:tarraw974@gmail.com)
-- **Projet original** : [Sherlock Project](https://github.com/sherlock-project/sherlock) par [@sdushantha](https://github.com/sdushantha) et la communauté (licence MIT)
-- **Base de données** : `data.json` maintenu par la communauté Sherlock Project
+- **Author**: Olivier Hoarau — [tarraw974@gmail.com](mailto:tarraw974@gmail.com)
+- **Original project**: [Sherlock Project](https://github.com/sherlock-project/sherlock) by [@sdushantha](https://github.com/sdushantha) and the community (MIT license)
+- **Database**: `data.json` maintained by the Sherlock Project community
 
 ---
 
-## Licence
+## License
 
-MIT — voir le fichier [LICENSE](LICENSE)
+MIT — see the [LICENSE](LICENSE) file
 
 ---
 
 <div align="center">
-  <sub>Développé avec passion et Rust 🦀 — Olivier Hoarau</sub>
+  <sub>Built with passion and Rust 🦀 — Olivier Hoarau</sub>
 </div>
