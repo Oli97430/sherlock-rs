@@ -1,0 +1,25 @@
+[package]
+name = "sherlock-rs"
+version = "1.0.0"
+edition = "2021"
+authors = ["Olivier Hoarau <tarraw974@gmail.com>"]
+description = "Hunt down social media accounts by username — Rust rewrite with modern UI"
+license = "MIT"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+axum = "0.7"
+reqwest = { version = "0.12", features = ["json", "socks"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+regex = "1"
+open = "5"
+dirs = "6"
+csv = "1"
+tokio-stream = "0.1"
+anyhow = "1"
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true
